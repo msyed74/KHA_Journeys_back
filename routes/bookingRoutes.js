@@ -1,15 +1,24 @@
 import express from "express";
 import multer from "multer";
 import Booking from "../models/Booking.js";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "cloudinary";
 
 const router = express.Router();
 
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
+
 // File upload config
-const storage = multer.diskStorage({
-  destination: "uploads/",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  }
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary.v2,
+  params: {
+    folder: "kha-bookings",
+    allowed_formats: ["jpg", "png", "jpeg"],
+  },
 });
 
 const upload = multer({ storage });
@@ -27,14 +36,22 @@ router.post(
   ]),
   async (req, res) => {
     try {
+     
       const booking = new Booking({
         ...req.body,
-        passportImage: req.files?.passportImage?.[0]?.filename,
-        photo: req.files?.photo?.[0]?.filename
+        passportImage: req.files?.passportImage?.[0]?.path,
+        photo: req.files?.photo?.[0]?.path,
       });
+      
 
       await booking.save();
-      res.status(201).json({ success: true, message: "Booking saved" });
+
+      res.status(201).json({
+        success: true,
+        message: "Booking saved successfully",
+      });
+      
+      
     } catch (error) {
       res.status(500).json({ success: false, error });
     }
