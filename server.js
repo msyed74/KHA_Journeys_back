@@ -17,13 +17,22 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 
 const app = express();
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://karwanehasanaskari.com",
+      "https://www.karwanehasanaskari.com",
+      "https://kha-journeys-qmkurnmyw-msyed74s-projects.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-app.use(cors({
-   origin: [
-  "http://localhost:5173",
-"https://karwanehasanaskari.com/",
-"https://kha-journeys-qmkurnmyw-msyed74s-projects.vercel.app/"
-] }));
+// VERY IMPORTANT: allow preflight
+app.options("*", cors());
+
 app.use(express.json());
 
 app.use("/api/subscribe", subscribeRoute);
