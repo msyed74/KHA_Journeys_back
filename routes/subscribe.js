@@ -18,10 +18,25 @@ router.post("/", async (req, res) => {
     if (exists)
       return res.status(409).json({ message: "Already subscribed" });
 
+   
+    // 1️⃣ Save subscriber FIRST (critical)
     await Subscriber.create({ email });
 
-    await sendWelcomeEmail(email);
-    await sendAdminSubscriberAlert(email);
+    // 2️⃣ Respond to client FIRST
+    res.status(201).json({ message: "Subscribed successfully" });
+
+    // 3️⃣ Send emails AFTER response (never block API)
+    try {
+      await sendWelcomeEmail(email);
+    } catch (e) {
+      console.error("❌ User email failed:", e.message);
+    }
+
+    try {
+      await sendAdminSubscriberAlert(email);
+    } catch (e) {
+      console.error("❌ Admin email failed:", e.message);
+    }
 
     res.status(201).json({ message: "Subscribed successfully" });
   } catch (err) {
