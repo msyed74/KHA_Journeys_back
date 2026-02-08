@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
+
+
 import bookingRoutes from "./routes/bookingRoutes.js";
 import subscribeRoute from "./routes/subscribe.js";
 import campaignRoutes from "./routes/campaignRoutes.js";
@@ -16,28 +18,46 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://karwanehasanaskari.com",
+  "https://www.karwanehasanaskari.com",
+  "https://kha-journeys-qmkurnmyw-msyed74s-projects.vercel.app"
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PUT,DELETE,OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
 const app = express();
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://karwanehasanaskari.com",
-      "https://www.karwanehasanaskari.com",
-      "https://kha-journeys-qmkurnmyw-msyed74s-projects.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
 
-// VERY IMPORTANT: allow preflight
-app.options("*", cors());
-
+app.use(customCorsMiddlewareAbove);
 app.use(express.json());
 
 app.use("/api/subscribe", subscribeRoute);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/campaigns", campaignRoutes);
+
 
 
 app.get("/", (req, res) => {
