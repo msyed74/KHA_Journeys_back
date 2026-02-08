@@ -5,8 +5,6 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-
-
 import bookingRoutes from "./routes/bookingRoutes.js";
 import subscribeRoute from "./routes/subscribe.js";
 import campaignRoutes from "./routes/campaignRoutes.js";
@@ -18,6 +16,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 
+const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -49,7 +48,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const app = express();
 
 app.use(customCorsMiddlewareAbove);
 app.use(express.json());
