@@ -2,21 +2,12 @@ import express from "express";
 import multer from "multer";
 import Booking from "../models/Booking.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "cloudinary";
+
 
 const router = express.Router();
 
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET,
-});
-console.log("Cloudinary env:", {
-  name: process.env.CLOUDINARY_NAME,
-  key: process.env.CLOUDINARY_KEY ? "OK" : "MISSING",
-  secret: process.env.CLOUDINARY_SECRET ? "OK" : "MISSING",
-});
+
 
 
 // File upload config

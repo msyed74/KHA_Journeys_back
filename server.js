@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // LOAD ENV FIRST
-dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config();
 
 
 const app = express();
@@ -37,8 +37,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// 👇 REQUIRED for multipart/form-data
-app.options("*", cors());
+
 
 
 
