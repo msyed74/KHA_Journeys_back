@@ -6,14 +6,9 @@ import cloudinary from "../utils/cloudinary.js";
 
 
 const router = express.Router();
-
-
-
-
-
 // File upload config
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary.v2,
+  cloudinary,
   params: {
     folder: "kha-bookings",
     resource_type: "image",
