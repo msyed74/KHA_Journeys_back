@@ -7,7 +7,7 @@ cloudinary.v2.config({
 });
 
 console.log("Cloudinary env:", {
-  name: process.env.CLOUDINARY_CLOUD_NAME,
+  cloud: process.env.CLOUDINARY_CLOUD_NAME,
   key: process.env.CLOUDINARY_API_KEY ? "OK" : "MISSING",
   secret: process.env.CLOUDINARY_API_SECRET ? "OK" : "MISSING",
 });
