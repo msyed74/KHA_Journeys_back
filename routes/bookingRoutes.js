@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import Booking from "../models/Booking.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../cloudinary.js";
 
 
 const router = express.Router();

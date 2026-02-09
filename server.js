@@ -31,6 +31,7 @@ app.use(cors({
     "https://karwanehasanaskari.com",
     "https://www.karwanehasanaskari.com",
     "https://kha-journeys-qmkurnmyw-msyed74s-projects.vercel.app",
+    "https://kha-journeys-s04revic0-msyed74s-projects.vercel.app",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
