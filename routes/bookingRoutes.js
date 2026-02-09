@@ -6,43 +6,103 @@ import cloudinary from "cloudinary";
 
 const router = express.Router();
 
+
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_KEY,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
+console.log("Cloudinary env:", {
+  name: process.env.CLOUDINARY_NAME,
+  key: process.env.CLOUDINARY_KEY ? "OK" : "MISSING",
+  secret: process.env.CLOUDINARY_SECRET ? "OK" : "MISSING",
+});
+
 
 // File upload config
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: {
     folder: "kha-bookings",
+    resource_type: "image",
     allowed_formats: ["jpg", "png", "jpeg"],
   },
 });
+
 
 const upload = multer({ storage });
 
 router.get("/test", (req, res) => {
     res.json({ success: true, message: "Booking API working" });
   });
+  router.get("/", (req, res) => {
+    res.json({
+      success: true,
+      message: "Bookings endpoint is live",
+    });
+  });
+  
   
 // POST booking form
 router.post(
   "/",
-  upload.fields([
-    { name: "passportImage" },
-    { name: "photo" }
-  ]),
+  (req, res, next) => {
+    upload.fields([
+      { name: "passportImage" },
+      { name: "photo" }
+    ])(req, res, err => {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      next();
+    });
+  },
   async (req, res) => {
     try {
-     
+      const {
+        fullName,
+        gender,
+        dob,
+        age,
+        nationality,
+        passportNumber,
+        whatsapp,
+        emergencyContact,
+        packageType,
+      } = req.body;
+
+      if (
+        !fullName ||
+        !gender ||
+        !dob ||
+        !age ||
+        !nationality ||
+        !passportNumber ||
+        !whatsapp ||
+        !emergencyContact ||
+        !packageType
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields",
+        });
+      }
+
+      if (!req.files?.passportImage || !req.files?.photo) {
+        return res.status(400).json({
+          success: false,
+          message: "Passport image and photo are required",
+        });
+      }
+
       const booking = new Booking({
         ...req.body,
-        passportImage: req.files?.passportImage?.[0]?.path,
-        photo: req.files?.photo?.[0]?.path,
+        passportImage: req.files.passportImage[0].path,
+        photo: req.files.photo[0].path,
       });
-      
 
       await booking.save();
 
@@ -50,12 +110,16 @@ router.post(
         success: true,
         message: "Booking saved successfully",
       });
-      
-      
     } catch (error) {
-      res.status(500).json({ success: false, error });
+      console.error("Booking error:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Server error",
+      });
     }
   }
 );
+
+
 
 export default router;
