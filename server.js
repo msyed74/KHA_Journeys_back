@@ -25,32 +25,25 @@ const allowedOrigins = [
   "https://kha-journeys-qmkurnmyw-msyed74s-projects.vercel.app"
 ];
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://karwanehasanaskari.com",
+    "https://www.karwanehasanaskari.com",
+    "https://kha-journeys-qmkurnmyw-msyed74s-projects.vercel.app",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
 
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
+// 👇 REQUIRED for multipart/form-data
+app.options("*", cors());
 
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,DELETE,OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-
-  next();
-});
 
 
 app.use(express.json());
-
+app.use(express.urlencoded({extended: true}));
 app.use("/api/subscribe", subscribeRoute);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/campaigns", campaignRoutes);
